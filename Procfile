@@ -1,1 +1,1 @@
-web: ./gradlew appRun
+web: ./gradlew -PhttpPort=$PORT  appRun

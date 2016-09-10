@@ -22,3 +22,8 @@ dependencies {
 task stage{
     dependsOn build
 }
+
+gretty {
+    httpPort = project.hasProperty("httpPort") ? project.httpPort as int : 8080
+    contextPath = '/'
+}
