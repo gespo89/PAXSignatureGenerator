@@ -16,7 +16,7 @@ repositories {
 dependencies {
     providedCompile 'javax.servlet:javax.servlet-api:3.1.0'
     testCompile group: 'junit', name: 'junit', version: '4.11'
-    runtime 'javax.servlet:jstl:1.1.2'
+    runtime 'javax.servlet:jstl:1.2'
 }
 
 task stage{
@@ -24,6 +24,6 @@ task stage{
 }
 
 gretty {
-    httpPort = project.hasProperty("httpPort") ? project.httpPort as int : 8080
+    httpPort = project.hasProperty("httpPort") ? project.httpPort as int : 80
     contextPath = '/'
 }
