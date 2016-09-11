@@ -72,11 +72,9 @@ public class BadgeGeneratorServlet extends HttpServlet {
         int rows = (int)Math.ceil((double)badges.size() / (double)wrap);
         BufferedImage image = new BufferedImage(offsetWidth* badges.size(), rows * offsetHeight, BufferedImage.TYPE_INT_ARGB);
         Graphics g = image.getGraphics();
-        if(wrap > 0){
-            for(int i = 0; i < badges.size(); i++){
-                BufferedImage badgeImage = badges.get(i).getImage();
-                g.drawImage(badgeImage, offsetWidth * (i % wrap), offsetHeight * (i / wrap), null);
-            }
+        for(int i = 0; i < badges.size(); i++){
+            BufferedImage badgeImage = badges.get(i).getImage();
+            g.drawImage(badgeImage, offsetWidth * (i % wrap), offsetHeight * (i / wrap), null);
         }
 
         return image;
