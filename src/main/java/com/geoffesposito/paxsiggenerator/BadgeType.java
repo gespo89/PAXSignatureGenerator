@@ -5,9 +5,10 @@ package com.geoffesposito.paxsiggenerator;
  */
 public enum BadgeType {
     ATTENDEE("Attendee", 0),
-    OMEGANAUT("Omeganaut", 2),
-    MEDIA("Media", 1),
-    ENFORCER("Enforcer", 3);
+    BYOC("BYOC", 1),
+    OMEGANAUT("Omeganaut", 3),
+    MEDIA("Media", 2),
+    ENFORCER("Enforcer", 4);
 
     private final String displayName;
     private final int offSet;
