@@ -26,9 +26,25 @@ public class Badge implements Comparable<Badge>{
     public int compareTo(Badge other) {
         int val = this.year - other.year;
         if(val == 0){
-            return this.pax.getSortOrder() - other.pax.getSortOrder();
+            if(this.year == 2013){
+                return sort2013(other);
+            } else {
+                return this.pax.getSortOrder() - other.pax.getSortOrder();
+            }
         } else {
             return val;
         }
+    }
+
+    private int sort2013(Badge other){
+        //TODO: This is functional. But I don't like it.
+        //Can we programmatically get PAX dates and use actual dates instead?
+        if(this.pax == PAX.AUS && (other.pax == PAX.DEV || other.pax == PAX.WEST)){
+            return -1;
+        }
+        if(other.pax == PAX.AUS && (this.pax == PAX.DEV || this.pax == PAX.WEST)){
+            return 1;
+        }
+        return this.pax.getSortOrder() - other.pax.getSortOrder();
     }
 }

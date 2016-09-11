@@ -46,7 +46,14 @@
                 </tbody>
             </table>
             <div class="panel-footer clearfix">
-                Badges will be displayed in the order listed here.<br /><label class="btn btn-default"><input type="checkbox" autocomplete="off" name="sortBadges"/> Sort by year instead.</label>
+                <label class="btn btn-default">Wrap:
+                <select name="wrap">
+                    <option value="nowrap">No Wrap</option>
+                <c:forEach begin="1" end="20" varStatus="loop">
+                    <option value="${loop.index}">${loop.index}</option>
+                </c:forEach>
+                </select>
+                </label>
                 <button type="submit" class="btn btn-primary pull-right">Generate!</button>
             </div>
         </div>
