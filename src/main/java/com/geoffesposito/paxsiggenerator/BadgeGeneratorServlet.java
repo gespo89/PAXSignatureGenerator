@@ -33,6 +33,7 @@ public class BadgeGeneratorServlet extends HttpServlet {
         List<PAX> paxen = Arrays.stream(request.getParameterValues("PAX[]")).map(PAX::valueOf).collect(Collectors.toList());
         List<BadgeType> badgeTypes = Arrays.stream(request.getParameterValues("Badge[]")).map(BadgeType::valueOf).collect(Collectors.toList());
         List<Boolean> futures = new ArrayList<Boolean>(Collections.nCopies(years.size(), false));
+        boolean sort = request.getParameter("sortBadges") != null;
         String[] futureValues = request.getParameterValues("future[]");
         if(futureValues != null){
             for (String s: futureValues){
@@ -44,6 +45,9 @@ public class BadgeGeneratorServlet extends HttpServlet {
         for(int i = 0; i < years.size(); i++){
             Badge badge = new Badge(paxen.get(i), years.get(i), badgeTypes.get(i), futures.get(i));
             badges.add(badge);
+        }
+        if(sort){
+            Collections.sort(badges);
         }
         response.setContentType("image/png");
         OutputStream out = response.getOutputStream();

@@ -1,30 +1,62 @@
 package com.geoffesposito.paxsiggenerator;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
+import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
+import java.time.Year;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Geoff on 8/28/2016.
  */
-public enum PAX {
-    SOUTH("/images/PAX_SOUTH.png"),
-    EAST("/images/PAX_EAST.png"),
-    WEST("/images/PAX_WEST.png"),
-    AUS("/images/PAX_AUS.png"),
-    DEV("/images/PAX_DEV.png");
+public enum PAX implements Comparable<PAX>{
+    WEST("PAX West", "/images/PAX_WEST.png", 2004, 3),
+    EAST("PAX East", "/images/PAX_EAST.png", 2010, 1),
+    AUS("PAX Aus", "/images/PAX_AUS.png", 2013, 4),
+    SOUTH("PAX South", "/images/PAX_SOUTH.png", 2015, 0),
+    DEV("PAX Dev", "/images/PAX_DEV.png", 2011, 2);
 
-    private BufferedImage image;
+    private final String displayName;
+    private final BufferedImage image;
+    private final int startYear;
+    private final int sortOrder;
 
-    PAX(String image){
-        try {
-            this.image = ImageIO.read(PAX.class.getResourceAsStream(image));
-        } catch (IOException e) {
+    PAX(String displayName, String image, int startYear, int sortOrder) {
+        this.displayName = displayName;
+        this.image = readImage(image);
+        this.startYear = startYear;
+        this.sortOrder = sortOrder;
+    }
 
+    private static BufferedImage readImage(String path){
+            try {
+                return ImageIO.read(PAX.class.getResourceAsStream(path));
+            } catch (IOException e) {
+                return null;
+            }
+    }
+
+    public String getName(){
+        return this.name();
+    }
+
+    public String getDisplayName(){
+        return this.displayName;
+    }
+
+    public int getSortOrder(){
+        return this.sortOrder;
+    }
+
+    public List<Integer> getYears(){
+        ArrayList<Integer> years = new ArrayList<>();
+        int last = Year.now().getValue() + 1;
+        for(int i = this.startYear; i <= last; i++){
+            years.add(i);
         }
-
+        return years;
     }
 
     public BufferedImage getBadge(int year, boolean future, BadgeType badgeType){

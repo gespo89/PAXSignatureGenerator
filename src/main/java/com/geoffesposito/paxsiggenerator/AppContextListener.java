@@ -4,6 +4,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
+import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -17,7 +18,7 @@ public class AppContextListener implements ServletContextListener{
     public void contextInitialized(ServletContextEvent sce) {
         ServletContext context = sce.getServletContext();
 
-        context.setAttribute("paxen", Stream.of(PAX.values()).map(PAX::name).collect(Collectors.toList()));
+        context.setAttribute("paxen", Arrays.asList(PAX.values()));
         context.setAttribute("badgetypes", Stream.of(BadgeType.values()).map(BadgeType::name).collect(Collectors.toList()));
     }
 
