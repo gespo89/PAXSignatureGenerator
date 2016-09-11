@@ -19,7 +19,7 @@ public class AppContextListener implements ServletContextListener{
         ServletContext context = sce.getServletContext();
 
         context.setAttribute("paxen", Arrays.asList(PAX.values()));
-        context.setAttribute("badgetypes", Stream.of(BadgeType.values()).map(BadgeType::name).collect(Collectors.toList()));
+        context.setAttribute("badgetypes", Arrays.asList(BadgeType.values()));
     }
 
     @Override

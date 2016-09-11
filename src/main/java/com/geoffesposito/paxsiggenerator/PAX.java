@@ -61,7 +61,7 @@ public enum PAX implements Comparable<PAX>{
 
     public BufferedImage getBadge(int year, boolean future, BadgeType badgeType){
         int y = future ? Constants.BADGE_HEIGHT : 0;
-        int x = badgeType.ordinal() * Constants.BADGE_WIDTH;
+        int x = badgeType.getOffset() * Constants.BADGE_WIDTH;
         BufferedImage badge = new BufferedImage(Constants.BADGE_WIDTH, Constants.BADGE_HEIGHT,  BufferedImage.TYPE_INT_ARGB);
         badge.getGraphics().drawImage(image.getSubimage(x, y, Constants.BADGE_WIDTH, Constants.BADGE_HEIGHT), 0, 0, null);
         drawNumber(badge, future, year, badgeType);

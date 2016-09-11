@@ -71,10 +71,9 @@
                         '<input type="hidden" name="Year[]" value="' + $(this).parent().text() + '"/>' +
                         '<input type="hidden" name="PAX[]" value="' + $(this).data('pax') + '"/>' +
                         '<select class="form-control" name="Badge[]">' +
-                            '<option value="ATTENDEE">Attendee</option>' +
-                            '<option value="OMEGANAUT">Omeganaut</option>' +
-                            '<option value="MEDIA">Media</option>' +
-                            '<option value="ENFORCER">Enforcer</option>' +
+                        <c:forEach items="${applicationScope['badgetypes']}" var="type">
+                            '<option value="${type.name}">${type.displayName}</option>' +
+                        </c:forEach>
                         '</select>' +
                     '</td>' +
                     '<td>' +
