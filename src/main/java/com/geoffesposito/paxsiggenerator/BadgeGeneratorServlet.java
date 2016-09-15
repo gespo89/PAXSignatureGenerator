@@ -11,6 +11,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.Buffer;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,6 +36,7 @@ public class BadgeGeneratorServlet extends HttpServlet {
         List<PAX> paxen = Arrays.stream(request.getParameterValues("PAX[]")).map(PAX::valueOf).collect(Collectors.toList());
         List<BadgeType> badgeTypes = Arrays.stream(request.getParameterValues("Badge[]")).map(BadgeType::valueOf).collect(Collectors.toList());
         List<Boolean> futures = new ArrayList<>(Collections.nCopies(years.size(), false));
+        boolean upload = getUpload(request);
         int wrap = getWrap(request);
 
         String[] futureValues = request.getParameterValues("future[]");
@@ -51,9 +53,25 @@ public class BadgeGeneratorServlet extends HttpServlet {
         }
         Collections.sort(badges);
 
+        BufferedImage image = generate(badges, wrap);
+
+        String clientId = System.getProperty("imgur.client.id");
+        if(clientId != null && upload){
+            try {
+                response.sendRedirect(ImgurUploader.postImage(clientId, image));
+            } catch (Exception e){
+                postImage(response, image);
+            }
+        } else {
+            postImage(response, image);
+        }
+
+    }
+
+    private void postImage(HttpServletResponse response, BufferedImage image) throws IOException {
         response.setContentType("image/png");
         OutputStream out = response.getOutputStream();
-        ImageIO.write(generate(badges, wrap), "PNG", out);
+        ImageIO.write(image, "PNG", out);
         out.close();
     }
 
@@ -64,6 +82,10 @@ public class BadgeGeneratorServlet extends HttpServlet {
             wrap = Ints.tryParse(wrapString);
         }
         return wrap != null ? wrap : Integer.MAX_VALUE;
+    }
+
+    private boolean getUpload(HttpServletRequest request){
+        return request.getParameter("upload") != null;
     }
 
     private BufferedImage generate(List<Badge> badges, int wrap) throws IOException {

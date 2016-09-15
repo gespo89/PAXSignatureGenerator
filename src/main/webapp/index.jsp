@@ -54,6 +54,8 @@
                 </c:forEach>
                 </select>
                 </label>
+                <label class="btn btn-default">
+                    <input type="checkbox" autocomplete="off" name="upload">(beta) Upload to imgur?</label>
                 <button type="submit" class="btn btn-primary pull-right">Generate!</button>
             </div>
         </div>
