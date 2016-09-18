@@ -277,6 +277,50 @@ const BADGE_IMG_LOOKUP = {"AUS": "PAX_AUS.png",
                           "SOUTH": "PAX_SOUTH.png",
                           "WEST": "PAX_WEST.png" }
 const VERYLARGEWRAP = 1000;
+var SORTMAGIC = {
+  "2004": 	{"WEST":	"2004/08/28"	},
+  "2005": 	{"WEST":	"2005/08/26"	},
+  "2006": 	{"WEST":	"2006/08/25"	},
+  "2007": 	{"WEST":	"2007/08/24"	},
+  "2008": 	{"WEST":	"2008/08/29"	},
+  "2009": 	{"WEST":	"2009/09/04"	},
+  "2010": 	{"EAST":	"2010/03/26",
+  			"WEST": 	"2010/09/03"	},
+  "2011": 	{"EAST":	"2011/03/11",
+  			"WEST": 	"2011/08/26",
+  			"DEV": 	"2011/08/24"	},
+  "2012": 	{"EAST":	"2012/04/06",
+  			"WEST": 	"2012/08/31",
+  			"DEV": 	"2012/08/29"	},
+  "2013": 	{"EAST":	"2013/03/22",
+  			"AUS": 	"2013/07/19",
+  			"WEST": 	"2013/08/30",
+  			"DEV": 	"2013/08/28"	},
+  "2014": 	{"EAST":	"2014/04/11",
+  			"AUS": 	"2014/10/31",
+  			"WEST": 	"2014/08/29",
+  			"DEV": 	"2014/08/27"	},
+  "2015": 	{"SOUTH":	"2015/01/29",
+  			"EAST": 	"2015/04/22",
+  			"AUS": 	"2015/10/30",
+  			"WEST": 	"2015/08/28",
+  			"DEV": 	"2015/08/26"	},
+  "2016": 	{"SOUTH":	"2016/01/29",
+  			"EAST": 	"2016/04/22",
+  			"AUS": 	"2016/11/04",
+  			"WEST": 	"2016/09/02",
+  			"DEV": 	"2016/08/31"	},
+  "2017": 	{"SOUTH":	"2017/01/29",
+  			"EAST": 	"2017/04/01",
+  			"AUS": 	"2017/10/31",
+  			"WEST": 	"2017/08/31",
+  			"DEV": 	"2017/08/30"	} };
+
+for( var obj in SORTMAGIC) {
+  for( var pax in SORTMAGIC[obj]) {
+    SORTMAGIC[obj][pax] = new Date(SORTMAGIC[obj][pax])
+  }
+}
 
 function badgeChanged() {
   var badgeform = $(this).serializeArray()
@@ -391,6 +435,12 @@ function makeImage(badge_array, wrap) {
     })
     return // We've setup the image to be blanked, so bail.
   }
+
+  badge_array.sort(function(a,b) {
+    adate = new Date(SORTMAGIC[a.year][a.PAX])
+    bdate = new Date(SORTMAGIC[b.year][b.PAX])
+    return (adate - bdate)
+  })
 
   for( var badge_idx = 0; badge_idx < badge_array.length; badge_idx++ ) {
     var fw = {"badge_idx": badge_idx}
