@@ -426,8 +426,7 @@ function makeImage(badge_array, wrap) {
   rows = Math.ceil(badge_array.length / wrap)
   rows = (isNaN(rows) || ( rows <= 0 )) ? 1 : rows
   rows = (rows > 20) ? 20 : rows
-  // TODO Find width given number of rows
-  var image = new Jimp( 1 + badgewidthoffset * badge_array.length, badgeheightoffset * rows )
+  var image = new Jimp( 1 + badgewidthoffset * Math.min(badge_array.length, wrap), badgeheightoffset * rows )
   var offset = 1
   if( (badge_array === undefined) || badge_array.length == 0 ) {
     image.getBase64(Jimp.MIME_PNG, function (err, datauri) {
