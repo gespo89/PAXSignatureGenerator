@@ -16,7 +16,8 @@ public enum PAX implements Comparable<PAX>{
     EAST("PAX East", "/images/PAX_EAST.png", 2010, 1),
     AUS("PAX Aus", "/images/PAX_AUS.png", 2013, 4),
     SOUTH("PAX South", "/images/PAX_SOUTH.png", 2015, 0),
-    DEV("PAX Dev", "/images/PAX_DEV.png", 2011, 2);
+    DEV("PAX Dev", "/images/PAX_DEV.png", 2011, 2),
+    UNPLUGGED("PAX Unplugged", "/images/PAX_UNPLUGGED.png", 2017, 5);
 
     private final String displayName;
     private final BufferedImage image;
