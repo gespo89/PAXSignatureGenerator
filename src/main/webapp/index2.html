@@ -146,9 +146,10 @@
             </div>
     </div>
     <div class="panel panel-primary">
-      <img id="badges" />
+      <img id="badges" /><br /><p />
+      <img id="testbadge" />
     </div>
-    <form method="POST" action="signature.png">
+    <form method="POST" action="javascript: return false">
         <div class="panel panel-primary">
             <div class="panel-heading">My PAX</div>
             <table class="table table-striped table-bordered table-responsive">
@@ -210,6 +211,9 @@
     </form>
 </div>
 
+
+<script src="js/es6-promise.js"></script>
+<script>var Promise = Promise || ES6Promise.Promise</script>
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <!-- Include all compiled plugins (below), or include individual files as needed -->
@@ -227,18 +231,19 @@
                     '<td>' +
                         '<input type="hidden" name="Year[]" value="' + $(this).parent().text() + '"/>' +
                         '<input type="hidden" name="PAX[]" value="' + $(this).data('pax') + '"/>' +
-                        '<select class="form-control" name="Badge[]">' +
-
-                            '<option value="ATTENDEE">Attendee</option>' +
-
-                            '<option value="BYOC">BYOC</option>' +
-
-                            '<option value="OMEGANAUT">Omeganaut</option>' +
-
-                            '<option value="MEDIA">Media</option>' +
-
+                        '<select class="form-control" name="BadgeBase[]">' +
+                            '<option value="ATTENDEE">Regular</option>' +
+                            //'<option value="FUTURE">Future</option>' +
                             '<option value="ENFORCER">Enforcer</option>' +
-
+                        '</select>' +
+                    '</td>' +
+                    '<td>' +
+                        '<select class="form-control" name="Ribbon[]">' +
+                            '<option value="NORIBBON">No Ribbon</option>' +
+                            '<option value="BYOC">BYOC</option>' +
+                            '<option value="MEDIA">Media</option>' +
+                            '<option value="OMEGANAUT">Omeganaut</option>' +
+                            '<option value="ENFORCER">Enforcer</option>' +
                         '</select>' +
                     '</td>' +
                     '<td>' +
@@ -259,169 +264,7 @@
     })
 </script>
 <script src="js/jimp.min.js"></script>
-<script>
-const BADGE_WIDTH = 23;
-const BADGE_HEIGHT = 29;
-const NUM_WIDTHS = [9,5,9,9,9,9,9,9,9,9];
-const NUM_HEIGHT = 11;
-const TEXT_OFFSET_Y = 11;
-const SPECIAL_TEXT_OFFSET_Y = 7;
-const BADGE_TYPES = {"ATTENDEE": {value: 0, name: "Attendee"},
-                     "BYOC": {value: 1, name:"BYOC"},
-                     "MEDIA": {value: 2, name: "Media"},
-                     "OMEGANAUT": {value: 3, name: "Omeganaut"},
-                     "ENFORCER": {value: 4, name: "Enforcer"}}
-const BADGE_IMG_LOOKUP = {"AUS": "PAX_AUS.png",
-                          "DEV": "PAX_DEV.png",
-                          "EAST": "PAX_EAST.png",
-                          "SOUTH": "PAX_SOUTH.png",
-                          "WEST": "PAX_WEST.png" }
-const VERYLARGEWRAP = 1000;
-
-function badgeChanged() {
-  var badgeform = $(this).serializeArray()
-  var futureidxs = badgeform.filter( function(value) {
-    return value.name == "future[]"
-  })
-  var flatbadgearray = badgeform.filter( function(value) {
-    return value.name != "future[]"
-  })
-  var wraparray = badgeform.filter( function(value) {
-    return value.name == "wrap"
-  })
-  var wrap
-  if (wraparray.length == 0) {
-    wrap = VERYLARGEWRAP
-  } else {
-    if (wraparray[0].value == "nowrap") {
-      wrap = VERYLARGEWRAP
-    } else {
-      wrap = parseInt(wraparray[0].value, 10)
-      if (isNaN(wrap)) {
-        wrap = VERYLARGEWRAP
-      }
-    }
-  }
-
-  var badgearray = []
-  for( var i = 0; i < flatbadgearray.length; i += 3 ) {
-    var thisbadge = flatbadgearray.slice( i, i + 3 )
-    var badge = { }
-    /* Assume that every 3 items from the form are a group of PAX data */
-    if( thisbadge.length == 3 ) {
-      for( idx in thisbadge ) {
-        if( thisbadge[idx].name == "Year[]") {
-          badge.year = Number(thisbadge[idx].value)
-        }
-        if( thisbadge[idx].name == "PAX[]") {
-          badge.PAX = thisbadge[idx].value
-        }
-        if( thisbadge[idx].name == "Badge[]") {
-          badge.badgetype = thisbadge[idx].value.slice(0)
-        }
-      }
-    badge.future = false
-    badgearray.push(badge)
-    }
-  }
-
-  /* Tag the proper future entries */
-  for (var i = 0; (i < futureidxs.length) && (i < badgearray.length); i++) {
-    var badgenum = Math.floor(Number(futureidxs[i].value))
-    if( badgenum < badgearray.length) badgearray[badgenum].future = true
-  }
-  console.log( badgearray )
-  makeImage( badgearray, wrap )
-}
-
-function getBadge(fw, pax, year, future, badge_type) {
-  var y = future ? BADGE_HEIGHT : 0;
-  var x = BADGE_TYPES[badge_type].value * BADGE_WIDTH;
-  var badge = new Jimp( BADGE_WIDTH, BADGE_HEIGHT )
-  return Jimp.read("../resources/images/" + BADGE_IMG_LOOKUP[pax]).then(function( badgeatlas ) {
-    // async bullshit
-    badge.blit( badgeatlas, 0, 0, x, y, BADGE_WIDTH, BADGE_HEIGHT )
-    drawNumber( badge, badgeatlas, future, year, badge_type )
-    return Promise.resolve({"fw": fw, "badge": badge})
-  })
-}
-
-function drawNumber(badge, badgeatlas, future, year, badge_type) {
-  if( (year - 2000) <= 0 ) {
-    return;
-  }
-  var year = Math.floor(year)
-  var onesDigit = year % 10
-  var tensDigit = Math.floor(year / 10) % 10
-  var numWidth = NUM_WIDTHS[onesDigit] + NUM_WIDTHS[tensDigit] + 1;
-  var textOffsetX = (BADGE_WIDTH - numWidth) / 2 ;
-  var textOffsetY = badge_type == "ATTENDEE" ? TEXT_OFFSET_Y : SPECIAL_TEXT_OFFSET_Y;
-
-  var color = (badge_type == "ENFORCER") || future;
-  drawDigit(badge, badgeatlas, tensDigit, color, textOffsetX, textOffsetY);
-  drawDigit(badge, badgeatlas, onesDigit, color, textOffsetX + NUM_WIDTHS[tensDigit] + 1, textOffsetY);
-}
-
-function drawDigit(badge, badgeatlas, digit, color, x, y) {
-    var digitOffsetX = Object.keys(BADGE_TYPES).length * BADGE_WIDTH;
-    for(var i = digit - digit % 5; i < digit; i++) {
-      digitOffsetX += NUM_WIDTHS[i];
-    }
-    var digitOffsetY = digit < 5 ? 0 : NUM_HEIGHT;
-    if( !color ) {
-      digitOffsetY += (NUM_HEIGHT * 2)
-    }
-    digitImg = badgeatlas.clone().crop( digitOffsetX, digitOffsetY, NUM_WIDTHS[digit], NUM_HEIGHT );
-    badge.composite( digitImg, x, y ) // Do not use blit, it doesn't understand transparency
-}
-
-function makeImage(badge_array, wrap) {
-  var badgeheightoffset = BADGE_HEIGHT + 2
-  var badgewidthoffset = BADGE_WIDTH + 2
-
-  rows = Math.ceil(badge_array.length / wrap)
-  rows = (isNaN(rows) || ( rows <= 0 )) ? 1 : rows
-  rows = (rows > 20) ? 20 : rows
-  // TODO Find width given number of rows
-  var image = new Jimp( 1 + badgewidthoffset * badge_array.length, badgeheightoffset * rows )
-  var offset = 1
-  if( (badge_array === undefined) || badge_array.length == 0 ) {
-    image.getBase64(Jimp.MIME_PNG, function (err, datauri) {
-      setBadgeImage(datauri)
-    })
-    return // We've setup the image to be blanked, so bail.
-  }
-
-  for( var badge_idx = 0; badge_idx < badge_array.length; badge_idx++ ) {
-    var fw = {"badge_idx": badge_idx}
-    var badgedata = getBadge( fw, badge_array[badge_idx].PAX, badge_array[badge_idx].year, badge_array[badge_idx].future, badge_array[badge_idx].badgetype )
-
-    badgedata.then( function(data) {
-      var y = Math.floor(data.fw.badge_idx / wrap)
-      var x = Math.floor(data.fw.badge_idx % wrap)
-      image.blit( data.badge, x * badgewidthoffset, y * badgeheightoffset )
-      // Mind the callback that delays setting the image until the base64 is calculated
-      image.getBase64(Jimp.MIME_PNG, function (err, datauri) {
-        setBadgeImage(datauri)
-      })
-    })
-  }
-}
-
-function setBadgeImage(datauri) {
-  badge_dom = document.getElementById("badges")
-  badge_dom.src = datauri
-}
-
-$(document).ready(function () {
-  //TODO: Add ID to form
-  var theform = $("#my-pax").closest("form")
-  theform.change( badgeChanged )
-  $("#my-pax").change( function() {
-    theform.trigger( "change" )
-  })
-})
-</script>
+<script src="js/instant.js"></script>
 
 </body>
 </html>
